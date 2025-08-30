@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coastal Threat Alert System - Protect Our Coasts</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>CoastalGuard</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#alerts">Alerts</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li class="language-selector">
+                    <select id="languageSelect">
+                        <option value="english">🇺🇸 English</option>
+                        <option value="hindi">🇮🇳 हिंदी</option>
+                        <option value="marathi">🇮🇳 मराठी</option>
+                        <option value="gujarati">🇮🇳 ગુજરાતી</option>
+                        <option value="tamil">🇮🇳 தமிழ்</option>
+                        <option value="telugu">🇮🇳 తెలుగు</option>
+                        <option value="malayalam">🇮🇳 മലയാളം</option>
+                        <option value="kannada">🇮🇳 ಕನ್ನಡ</option>
+                    </select>
+                </li>
+                <li><a href="#login" class="login-btn">Login</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>Protect Our Coastal Communities</h1>
+                <p>Early warning system for storm surges, coastal erosion, and environmental threats. Saving lives and livelihoods through real-time alerts and community empowerment.</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary">Get Started</button>
+                    <button class="btn-secondary">Watch Demo</button>
+                </div>
+                <div class="hero-features">
+                    <div class="feature-tag">
+                        <i class="fas fa-sms"></i>
+                        <span>SMS Alerts</span>
+                    </div>
+                    <div class="feature-tag">
+                        <i class="fas fa-globe"></i>
+                        <span>Multi-Language</span>
+                    </div>
+                    <div class="feature-tag">
+                        <i class="fas fa-users"></i>
+                        <span>Community Reports</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="alert-card">
+                    <div class="alert-header">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Live Alert</span>
+                    </div>
+                    <div class="alert-content">
+                        <h3>Storm Warning</h3>
+                        <p>High tide expected in 2 hours</p>
+                        <div class="alert-status critical">Critical</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Status Section -->
+    <section class="status-section">
+        <div class="container">
+            <h2>Live Coastal Status</h2>
+            <p class="section-subtitle">Real-time safety indicators for beachgoers and coastal communities</p>
+            <div class="status-grid">
+                <div class="status-card safe">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Beach Safety</h3>
+                    <p>Safe for swimming</p>
+                    <div class="status-indicator green"></div>
+                    <div class="status-details">
+                        <span class="detail-item">Current: Safe</span>
+                        <span class="detail-item">Updated: 2 min ago</span>
+                    </div>
+                </div>
+                <div class="status-card warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Tide Level</h3>
+                    <p>Rising - Monitor closely</p>
+                    <div class="status-indicator yellow"></div>
+                    <div class="status-details">
+                        <span class="detail-item">Level: 2.3m</span>
+                        <span class="detail-item">Next High: 3:45 PM</span>
+                    </div>
+                </div>
+                <div class="status-card safe">
+                    <i class="fas fa-wind"></i>
+                    <h3>Wind Speed</h3>
+                    <p>15 km/h - Normal</p>
+                    <div class="status-indicator green"></div>
+                    <div class="status-details">
+                        <span class="detail-item">Speed: 15 km/h</span>
+                        <span class="detail-item">Direction: SE</span>
+                    </div>
+                </div>
+                <div class="status-card critical">
+                    <i class="fas fa-radiation"></i>
+                    <h3>Water Quality</h3>
+                    <p>Pollution detected</p>
+                    <div class="status-indicator red"></div>
+                    <div class="status-details">
+                        <span class="detail-item">Status: Unsafe</span>
+                        <span class="detail-item">Reported: 1 hour ago</span>
+                    </div>
+                </div>
+            </div>
+            <div class="status-legend">
+                <div class="legend-item">
+                    <div class="legend-indicator green"></div>
+                    <span>Safe - Normal conditions</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-indicator yellow"></div>
+                    <span>Warning - Monitor closely</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-indicator red"></div>
+                    <span>Critical - Avoid area</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="dashboard">
+        <div class="container">
+            <h2>Real-Time Dashboard</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-row">
+                    <div class="dashboard-card weather-card">
+                        <h3>Weather Forecast</h3>
+                        <div class="weather-widget">
+                            <div class="weather-item">
+                                <i class="fas fa-cloud-rain"></i>
+                                <span>Rain: 60%</span>
+                            </div>
+                            <div class="weather-item">
+                                <i class="fas fa-thermometer-half"></i>
+                                <span>Temp: 28°C</span>
+                            </div>
+                            <div class="weather-item">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>Pressure: 1013 hPa</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card tide-card">
+                        <h3>Tide Information</h3>
+                        <div class="tide-info-container">
+                            <div class="tide-stats">
+                                <div class="tide-stat-item">
+                                    <i class="fas fa-water"></i>
+                                    <div>
+                                        <span class="stat-label">Current Level</span>
+                                        <span class="stat-value" id="currentTideLevel">2.4m</span>
+                                    </div>
+                                </div>
+                                <div class="tide-stat-item">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <div>
+                                        <span class="stat-label">High Tide</span>
+                                        <span class="stat-value" id="highTideTime">14:30</span>
+                                    </div>
+                                </div>
+                                <div class="tide-stat-item">
+                                    <i class="fas fa-arrow-down"></i>
+                                    <div>
+                                        <span class="stat-label">Low Tide</span>
+                                        <span class="stat-value" id="lowTideTime">08:15</span>
+                                    </div>
+                                </div>
+                                <div class="tide-stat-item">
+                                    <i class="fas fa-clock"></i>
+                                    <div>
+                                        <span class="stat-label">Next Change</span>
+                                        <span class="stat-value" id="nextTideChange">2h 15m</span>
+                                    </div>
+                                </div>
+                            </div>
+                                                           <div class="tide-chart">
+                                   <canvas id="tideChart"></canvas>
+                                   <div class="tide-chart-labels">
+                                       <span class="chart-label">Low</span>
+                                       <span class="chart-label">High</span>
+                                   </div>
+                               </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card alerts-card">
+                        <h3>Recent Alerts</h3>
+                        <div class="alerts-list">
+                            <div class="alert-item critical">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <div>
+                                    <h4>Storm Warning</h4>
+                                    <p>Cyclone approaching - Evacuation advised</p>
+                                    <small>2 hours ago</small>
+                                </div>
+                            </div>
+                            <div class="alert-item warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div>
+                                    <h4>High Tide Alert</h4>
+                                    <p>Unusually high tide expected</p>
+                                    <small>4 hours ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card community-reports">
+                    <h3>Community Reports</h3>
+                    <div class="reports-container">
+                        <div class="reports-column">
+                            <div class="report-item">
+                                <i class="fas fa-user"></i>
+                                <div>
+                                    <h4>Beach Erosion</h4>
+                                    <p>Significant erosion observed</p>
+                                    <small>Being monitored</small>
+                                </div>
+                            </div>
+                            <div class="report-item">
+                                <i class="fas fa-user"></i>
+                                <div>
+                                    <h4>Oil Spill</h4>
+                                    <p>Spotted near fishing harbor</p>
+                                    <small>Under investigation</small>
+                                </div>
+                            </div>
+                            <div class="report-item">
+                                <i class="fas fa-user"></i>
+                                <div>
+                                    <h4>Plastic Pollution</h4>
+                                    <p>Large amount of plastic waste</p>
+                                    <small>Action required</small>
+                                </div>
+                            </div>
+                            <div class="report-item">
+                                <i class="fas fa-user"></i>
+                                <div>
+                                    <h4>Water Quality</h4>
+                                    <p>Unusual color in water</p>
+                                    <small>Under investigation</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="reports-divider"></div>
+                        <div class="reports-column">
+                            <div class="report-item">
+                                <i class="fas fa-user"></i>
+                                <div>
+                                    <h4>Illegal Dumping</h4>
+                                    <p>Construction waste dumped</p>
+                                    <small>Being monitored</small>
+                                </div>
+                            </div>
+                            <div class="report-item">
+                                <i class="fas fa-user"></i>
+                                <div>
+                                    <h4>Beach Erosion</h4>
+                                    <p>Significant erosion observed</p>
+                                    <small>Under investigation</small>
+                                </div>
+                            </div>
+                            <div class="report-item">
+                                <i class="fas fa-user"></i>
+                                <div>
+                                    <h4>Oil Spill</h4>
+                                    <p>Spotted near fishing harbor</p>
+                                    <small>Action required</small>
+                                </div>
+                            </div>
+                            <div class="report-item">
+                                <i class="fas fa-user"></i>
+                                <div>
+                                    <h4>Beach Erosion</h4>
+                                    <p>Significant erosion observed</p>
+                                    <small>Being monitored</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coastal Map Section -->
+    <section id="coastal-map" class="coastal-map-section">
+        <div class="container">
+            <h2>Coastal Monitoring Map</h2>
+            <p class="section-subtitle">Real-time monitoring of coastal stations across India</p>
+            <div id="coastalMap" class="full-map-container"></div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2>How We Protect Coastal Communities</h2>
+            <p class="section-subtitle">Comprehensive solutions for every coastal community member</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>SMS Alerts</h3>
+                    <p>Instant SMS notifications to fishermen and coastal residents, even without smartphones or internet access.</p>
+                    <div class="feature-benefits">
+                        <span class="benefit-tag">No Internet Required</span>
+                        <span class="benefit-tag">Instant Delivery</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>AI-Powered Analysis</h3>
+                    <p>Advanced machine learning models detect patterns and predict threats before they become dangerous.</p>
+                    <div class="feature-benefits">
+                        <span class="benefit-tag">Predictive Alerts</span>
+                        <span class="benefit-tag">Pattern Recognition</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Community Reporting</h3>
+                    <p>Citizens can report illegal activities, pollution, and unusual coastal changes directly through the platform.</p>
+                    <div class="feature-benefits">
+                        <span class="benefit-tag">Two-way Communication</span>
+                        <span class="benefit-tag">Real-time Reports</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Multi-Language Support</h3>
+                    <p>Alerts and information available in local languages for better community understanding.</p>
+                    <div class="feature-benefits">
+                        <span class="benefit-tag">Local Languages</span>
+                        <span class="benefit-tag">Universal Access</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h3>Evacuation Routes</h3>
+                    <p>Real-time evacuation route planning and shelter information during emergencies.</p>
+                    <div class="feature-benefits">
+                        <span class="benefit-tag">Emergency Planning</span>
+                        <span class="benefit-tag">Shelter Info</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Historical Data</h3>
+                    <p>Comprehensive database of coastal changes, weather patterns, and environmental trends.</p>
+                    <div class="feature-benefits">
+                        <span class="benefit-tag">Trend Analysis</span>
+                        <span class="benefit-tag">Policy Support</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section class="impact">
+        <div class="container">
+            <h2>Our Impact</h2>
+            <p class="section-subtitle">Transforming coastal safety and community resilience</p>
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="impact-number">00</div>
+                    <h3>Lives Saved</h3>
+                    <p>Through early warnings and timely evacuations</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-number">00</div>
+                    <h3>Alerts Sent</h3>
+                    <p>Critical notifications to coastal communities</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-number">00</div>
+                    <h3>Communities</h3>
+                    <p>Protected across coastal regions</p>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-number">24/7</div>
+                    <h3>Monitoring</h3>
+                    <p>Continuous surveillance and threat detection</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Benefits Section -->
+    <section class="benefits">
+        <div class="container">
+            <h2>Direct Impact on Coastal Communities</h2>
+            <p class="section-subtitle">How our system benefits different user groups</p>
+            <div class="benefits-grid">
+                <div class="benefit-category">
+                    <div class="category-header">
+                        <i class="fas fa-store"></i>
+                        <h3>Shopkeepers & Businesses</h3>
+                    </div>
+                    <ul class="benefit-list">
+                        <li>Prepare for floods/erosion and storm surges</li>
+                        <li>Protect inventory and infrastructure</li>
+                        <li>Plan business operations around weather</li>
+                        <li>Reduce economic losses</li>
+                    </ul>
+                </div>
+                <div class="benefit-category">
+                    <div class="category-header">
+                        <i class="fas fa-fish"></i>
+                        <h3>Fisherfolk</h3>
+                    </div>
+                    <ul class="benefit-list">
+                        <li>SMS alerts without smartphones</li>
+                        <li>Avoid dangerous fishing conditions</li>
+                        <li>Save boats, nets, and lives</li>
+                        <li>Plan safe fishing trips</li>
+                    </ul>
+                </div>
+                <div class="benefit-category">
+                    <div class="category-header">
+                        <i class="fas fa-hotel"></i>
+                        <h3>Tourism Industry</h3>
+                    </div>
+                    <ul class="benefit-list">
+                        <li>Warn customers about unsafe beaches</li>
+                        <li>Reduce accidents and liabilities</li>
+                        <li>Plan activities around conditions</li>
+                        <li>Maintain safety standards</li>
+                    </ul>
+                </div>
+                <div class="benefit-category">
+                    <div class="category-header">
+                        <i class="fas fa-users"></i>
+                        <h3>Families & Beachgoers</h3>
+                    </div>
+                    <ul class="benefit-list">
+                        <li>Live safety status (Green/Red)</li>
+                        <li>Check conditions before swimming</li>
+                        <li>Early evacuation information</li>
+                        <li>Peace of mind during visits</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Everyday Relevance Section -->
+    <section class="everyday-relevance">
+        <div class="container">
+            <h2>Everyday Relevance, Not Just Disaster-Time</h2>
+            <p class="section-subtitle">Supporting daily activities and long-term planning</p>
+            <div class="relevance-grid">
+                <div class="relevance-card">
+                    <div class="relevance-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <h3>Daily Planning</h3>
+                    <p>Daily tide & weather forecasts help fishermen plan safe fishing trips and beachgoers check real-time conditions before swimming.</p>
+                </div>
+                <div class="relevance-card">
+                    <div class="relevance-icon">
+                        <i class="fas fa-chart-area"></i>
+                    </div>
+                    <h3>Long-term Monitoring</h3>
+                    <p>NGOs monitor slow changes like erosion and sea level rise for long-term planning and policy development.</p>
+                </div>
+                <div class="relevance-card">
+                    <div class="relevance-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3>Sustainable Living</h3>
+                    <p>Show data on coastal erosion & pollution trends to make locals aware of how daily actions affect the coast.</p>
+                </div>
+                <div class="relevance-card">
+                    <div class="relevance-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Preventive Action</h3>
+                    <p>Authorities can stop illegal sand mining or dumping before damage spreads to protect coastal habitats.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Alerts Section -->
+    <section id="alerts" class="alerts">
+        <div class="container">
+            <h2>Current Alerts</h2>
+            <div class="alerts-container">
+                <div class="alert-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="critical">Critical</button>
+                    <button class="filter-btn" data-filter="warning">Warning</button>
+                    <button class="filter-btn" data-filter="info">Info</button>
+                </div>
+                <div class="alerts-grid">
+                    <div class="alert-card critical">
+                        <div class="alert-header">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span class="alert-type">Critical</span>
+                            <span class="alert-time">2 hours ago</span>
+                        </div>
+                        <h3>Cyclone Warning</h3>
+                        <p>Cyclone 'Biparjoy' approaching coastal areas. Wind speeds expected to reach 120 km/h. Immediate evacuation advised for low-lying areas.</p>
+                        <div class="alert-actions">
+                            <button class="btn-small">View Details</button>
+                            <button class="btn-small secondary">Share</button>
+                        </div>
+                    </div>
+                    <div class="alert-card warning">
+                        <div class="alert-header">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span class="alert-type">Warning</span>
+                            <span class="alert-time">4 hours ago</span>
+                        </div>
+                        <h3>High Tide Alert</h3>
+                        <p>Unusually high tide expected during next 6 hours. Coastal areas may experience flooding. Avoid beach activities.</p>
+                        <div class="alert-actions">
+                            <button class="btn-small">View Details</button>
+                            <button class="btn-small secondary">Share</button>
+                        </div>
+                    </div>
+                    <div class="alert-card info">
+                        <div class="alert-header">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="alert-type">Info</span>
+                            <span class="alert-time">6 hours ago</span>
+                        </div>
+                        <h3>Water Quality Update</h3>
+                        <p>Water quality tests completed. Safe for swimming at most beaches. Avoid areas marked with red flags.</p>
+                        <div class="alert-actions">
+                            <button class="btn-small">View Details</button>
+                            <button class="btn-small secondary">Share</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SMS Registration Section -->
+    <section class="sms-registration">
+        <div class="container">
+            <h2>Get SMS Alerts</h2>
+            <p class="section-subtitle">Stay informed even without internet access</p>
+            <div class="sms-content">
+                <div class="sms-info">
+                    <div class="sms-benefits">
+                        <div class="benefit-item">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div>
+                                <h4>No Smartphone Required</h4>
+                                <p>Receive alerts on any mobile phone via SMS</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h4>Instant Delivery</h4>
+                                <p>Get critical alerts within seconds</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-globe"></i>
+                            <div>
+                                <h4>Local Language</h4>
+                                <p>Alerts in your preferred language</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sms-form">
+                    <h3>Register for SMS Alerts</h3>
+                    <form id="smsForm">
+                        <div class="form-group">
+                            <label for="smsPhone">Mobile Number</label>
+                            <input type="tel" id="smsPhone" placeholder="+91 98765 43210" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="smsLanguage">Preferred Language</label>
+                            <select id="smsLanguage" required>
+                                <option value="">Select language</option>
+                                <option value="english">English</option>
+                                <option value="hindi">Hindi</option>
+                                <option value="marathi">Marathi</option>
+                                <option value="gujarati">Gujarati</option>
+                                <option value="tamil">Tamil</option>
+                                <option value="telugu">Telugu</option>
+                                <option value="malayalam">Malayalam</option>
+                                <option value="kannada">Kannada</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="smsLocation">Coastal Area</label>
+                            <select id="smsLocation" required>
+                                <option value="">Select your area</option>
+                                <option value="mumbai">Mumbai</option>
+                                <option value="goa">Goa</option>
+                                <option value="kerala">Kerala</option>
+                                <option value="tamilnadu">Tamil Nadu</option>
+                                <option value="andhra">Andhra Pradesh</option>
+                                <option value="odisha">Odisha</option>
+                                <option value="westbengal">West Bengal</option>
+                                <option value="gujarat">Gujarat</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="smsAlerts">Alert Types</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="storm" checked>
+                                    <span>Storm Warnings</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="tide" checked>
+                                    <span>High Tide Alerts</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="pollution">
+                                    <span>Water Quality</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" value="emergency" checked>
+                                    <span>Emergency Alerts</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary">Register for SMS Alerts</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Emergency Hotline</h4>
+                            <p>+91 1800-COASTAL</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>alerts@coastalguard.gov.in</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>Headquarters</h4>
+                            <p>Coastal Management Authority<br>Mumbai, Maharashtra</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <h3>Report an Issue</h3>
+                    <form id="reportForm">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="issue">Issue Type</label>
+                            <select id="issue" required>
+                                <option value="">Select an issue</option>
+                                <option value="pollution">Water Pollution</option>
+                                <option value="erosion">Coastal Erosion</option>
+                                <option value="illegal">Illegal Dumping</option>
+                                <option value="weather">Weather Anomaly</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" placeholder="Beach name or coordinates" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" rows="4" placeholder="Describe the issue in detail..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">Submit Report</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>CoastalGuard</span>
+                    </div>
+                    <p>Protecting coastal communities through early warning systems and community empowerment.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#alerts">Alerts</a></li>
+                        <li><a href="#features">Features</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Emergency Guide</a></li>
+                        <li><a href="#">Safety Tips</a></li>
+                        <li><a href="#">Weather Updates</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CoastalGuard. All rights reserved. | Built for coastal community protection</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login to CoastalGuard</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" id="showSignup">Sign up</a></p>
+        </div>
+    </div>
+
+    <!-- Sign Up Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Create Account</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPhone">Phone Number</label>
+                    <input type="tel" id="signupPhone" placeholder="+91 98765 43210" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupLocation">Coastal Area</label>
+                    <select id="signupLocation" required>
+                        <option value="">Select your area</option>
+                        <option value="mumbai">Mumbai</option>
+                        <option value="goa">Goa</option>
+                        <option value="kerala">Kerala</option>
+                        <option value="tamilnadu">Tamil Nadu</option>
+                        <option value="andhra">Andhra Pradesh</option>
+                        <option value="odisha">Odisha</option>
+                        <option value="westbengal">West Bengal</option>
+                        <option value="gujarat">Gujarat</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="signupUserType">User Type</label>
+                    <select id="signupUserType" required>
+                        <option value="">Select user type</option>
+                        <option value="fisherfolk">Fisherfolk</option>
+                        <option value="business">Business Owner</option>
+                        <option value="tourist">Tourist/Beachgoer</option>
+                        <option value="ngo">NGO/Environmentalist</option>
+                        <option value="authority">Government Authority</option>
+                        <option value="general">General Public</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirmPassword">Confirm Password</label>
+                    <input type="password" id="signupConfirmPassword" required>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="signupTerms" required>
+                        <span>I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a></span>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="signupAlerts" checked>
+                        <span>Subscribe to SMS alerts for emergency notifications</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn-primary">Create Account</button>
+            </form>
+            <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+        </div>
+    </div>
+
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""
+    ></script>
+    <script src="script.js"></script>
+</body>
+</html>
