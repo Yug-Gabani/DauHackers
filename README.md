@@ -47,18 +47,12 @@ CoastalGuard Pro is a comprehensive early warning and alerting platform that lev
 
 ### Getting Started
 
-1. **Download the Project**
-   ```bash
-   # Navigate to the project directory
-   cd "C:\Users\dhvan\OneDrive\Desktop\CoastalGuard-Pro-System"
-   ```
-
-2. **Open the Website**
+1. **Open the Website**
    - Double-click on `index.html`
    - Or open with your preferred browser
    - The website will load with full functionality
 
-3. **Explore Features**
+2. **Explore Features**
    - View real-time coastal status
    - Check AI/ML threat detection
    - Monitor weather and tide information
