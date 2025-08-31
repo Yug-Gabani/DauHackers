@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Coastal Status</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Live Coastal Status</h1>
+        <p>Real-time safety indicators for beachgoers and coastal communities</p>
+
+        <div id="status">
+            <div class="card" id="beachSafety">
+                <h2>Beach Safety</h2>
+                <p>Safe for swimming</p>
+                <p>Current: <span id="beachSafetyCurrent">Loading...</span></p>
+                <p>Updated: <span id="beachSafetyUpdated">Loading...</span></p>
+            </div>
+
+            <div class="card" id="tideLevel">
+                <h2>Tide Level</h2>
+                <p>Rising - Monitor closely</p>
+                <p>Level: <span id="tideLevelValue">Loading...</span></p>
+                <p>Next High: <span id="tideLevelNextHigh">Loading...</span></p>
+            </div>
+
+            <div class="card" id="windSpeed">
+                <h2>Wind Speed</h2>
+                <p>15 km/h - Normal</p>
+                <p>Speed: <span id="windSpeedValue">Loading...</span></p>
+                <p>Direction: <span id="windSpeedDirection">Loading...</span></p>
+            </div>
+
+            <div class="card" id="waterQuality">
+                <h2>Water Quality</h2>
+                <p>Pollution detected</p>
+                <p>Status: <span id="waterQualityStatus">Loading...</span></p>
+                <p>Reported: <span id="waterQualityReported">Loading...</span></p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
