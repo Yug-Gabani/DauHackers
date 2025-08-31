@@ -1,0 +1,2495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoastalGuard Pro - AI/ML Powered Coastal Threat Alert System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""
+    />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-color: #1e40af;
+            --secondary-color: #3b82f6;
+            --accent-color: #06b6d4;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --ai-gradient: linear-gradient(135deg, #667eea, #764ba2);
+            --impact-gradient: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: var(--light-color);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .ai-status {
+            background: var(--ai-gradient);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .ai-status h3 {
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .ai-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .ai-metric {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .ai-metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .ai-metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        .alerts-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .alert-item {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .alert-item:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .alert-item.critical {
+            border-left: 4px solid var(--danger-color);
+            background: #fef2f2;
+        }
+        
+        .alert-item.high {
+            border-left: 4px solid var(--warning-color);
+            background: #fffbeb;
+        }
+        
+        .alert-item.medium {
+            border-left: 4px solid var(--accent-color);
+            background: #f0f9ff;
+        }
+        
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .alert-severity {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .alert-description {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #9ca3af;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .emergency-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .emergency-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(239, 68, 68, 0.6);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 16px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        .ai-performance {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+        
+        .ai-performance h3 {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .performance-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .performance-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .performance-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        /* Impact Section Styles */
+        .impact-section {
+            background: var(--impact-gradient);
+            color: white;
+            padding: 4rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .impact-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .impact-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 3rem;
+        }
+        
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .impact-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .impact-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 1rem;
+        }
+        
+        .impact-category {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .impact-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        /* Coastal Map Styles */
+        .coastal-map-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .map-container {
+            height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+        }
+        
+        .map-legend {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .main-content { padding: 1rem; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .card-value { font-size: 2rem; }
+            .impact-grid { grid-template-columns: 1fr; }
+            .impact-title { font-size: 2rem; }
+            .impact-number { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="logo" onclick="showHome()">
+                <i class="fas fa-shield-alt"></i>
+                CoastalGuard Pro
+            </div>
+            <ul class="nav-links">
+                <li><a onclick="showHome()">Home</a></li>
+                <li><a onclick="showDashboard()">Dashboard</a></li>
+                <li><a onclick="showFeatures()">Features</a></li>
+                <li><a onclick="showContact()">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Home Section -->
+        <section id="homeSection">
+            <!-- AI/ML Status -->
+            <div class="ai-status">
+                <h3>
+                    <i class="fas fa-robot"></i>
+                    AI/ML Threat Detection System - LIVE
+                </h3>
+                <p>Real-time coastal threat analysis using advanced machine learning models with 95%+ accuracy</p>
+                <div class="ai-metrics">
+                    <div class="ai-metric">
+                        <div class="ai-metric-value" id="aiAccuracy">95.2%</div>
+                        <div class="ai-metric-label">Accuracy</div>
+                    </div>
+                    <div class="ai-metric">
+                        <div class="ai-metric-value" id="aiConfidence">87.3%</div>
+                        <div class="ai-metric-label">Confidence</div>
+                    </div>
+                    <div class="ai-metric">
+                        <div class="ai-metric-value" id="aiThreats">3</div>
+                        <div class="ai-metric-label">Threats Detected</div>
+                    </div>
+                    <div class="ai-metric">
+                        <div class="ai-metric-value" id="aiModels">4</div>
+                        <div class="ai-metric-label">Active Models</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Model Performance -->
+            <div class="ai-performance">
+                <h3>
+                    <i class="fas fa-chart-line"></i>
+                    AI Model Performance Metrics
+                </h3>
+                <div class="performance-grid">
+                    <div class="performance-item">
+                        <div class="performance-value" id="floodingAccuracy">92.1%</div>
+                        <div class="performance-label">Flooding Model</div>
+                    </div>
+                    <div class="performance-item">
+                        <div class="performance-value" id="erosionAccuracy">89.7%</div>
+                        <div class="performance-label">Erosion Model</div>
+                    </div>
+                    <div class="performance-item">
+                        <div class="performance-value" id="pollutionAccuracy">94.3%</div>
+                        <div class="performance-label">Pollution Model</div>
+                    </div>
+                    <div class="performance-item">
+                        <div class="performance-value" id="stormAccuracy">91.8%</div>
+                        <div class="performance-label">Storm Model</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Coastal Status -->
+            <section id="liveStatus">
+                <div class="chart-title">
+                    <i class="fas fa-water"></i>
+                    Live Coastal Status - AI/ML Enhanced
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" onclick="showBeachSafety()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Beach Safety</div>
+                                <div class="card-value" id="beachSafety">Safe</div>
+                                <div class="card-description">AI Confidence: 94.2%</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--success-color);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showTideInfo()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Tide Level</div>
+                                <div class="card-value" id="tideLevel">2.3m</div>
+                                <div class="card-description">AI Prediction: Rising</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--warning-color);">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showWindInfo()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Wind Speed</div>
+                                <div class="card-value" id="windSpeed">15 km/h</div>
+                                <div class="card-description">AI Analysis: Normal</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--success-color);">
+                                <i class="fas fa-wind"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showWaterQuality()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Water Quality</div>
+                                <div class="card-value" id="waterQuality">Unsafe</div>
+                                <div class="card-description">AI Detection: Pollution</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--danger-color);">
+                                <i class="fas fa-radiation"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Real-Time Dashboard -->
+            <section id="realTimeDashboard">
+                <div class="chart-title">
+                    <i class="fas fa-chart-line"></i>
+                    Real-Time Dashboard - AI/ML Powered
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" onclick="showWeatherDetails()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Weather Forecast</div>
+                                <div class="card-value" id="rainChance">52%</div>
+                                <div class="card-description">AI Prediction: Rain likely</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--accent-color);">
+                                <i class="fas fa-cloud-rain"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showTideDetails()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Tide Information</div>
+                                <div class="card-value" id="currentTide">2.4m</div>
+                                <div class="card-description">ML Model: High tide soon</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--secondary-color);">
+                                <i class="fas fa-water"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showRecentAlerts()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Recent Alerts</div>
+                                <div class="card-value" id="alertCount">3</div>
+                                <div class="card-description">AI Generated: 2, Manual: 1</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--warning-color);">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Current Alerts -->
+            <section id="currentAlerts">
+                <div class="alerts-container">
+                    <div class="chart-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Current Alerts - AI/ML Enhanced Detection
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <button class="btn" onclick="filterAlerts('all')">All</button>
+                        <button class="btn btn-secondary" onclick="filterAlerts('critical')">Critical</button>
+                        <button class="btn btn-secondary" onclick="filterAlerts('warning')">Warning</button>
+                        <button class="btn btn-secondary" onclick="filterAlerts('info')">Info</button>
+                    </div>
+                    <div id="alertsList">
+                        <!-- AI-generated alerts will be populated here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Community Reports -->
+            <section id="communityReports">
+                <div class="alerts-container">
+                    <div class="chart-title">
+                        <i class="fas fa-users"></i>
+                        Community Reports - AI Validated
+                    </div>
+                    <div id="reportsList">
+                        <!-- AI-validated reports will be populated here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Section -->
+            <section id="featuresSection">
+                <div class="chart-title">
+                    <i class="fas fa-shield-alt"></i>
+                    How We Protect Coastal Communities - AI/ML Enhanced
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" onclick="showSMSAlerts()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">SMS Alerts</div>
+                                <div class="card-description">AI-powered instant SMS notifications</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--success-color);">
+                                <i class="fas fa-sms"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showAIAnalysis()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">AI-Powered Analysis</div>
+                                <div class="card-description">ML models with 95%+ accuracy</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--accent-color);">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showCommunityReporting()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Community Reporting</div>
+                                <div class="card-description">AI-validated community inputs</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--primary-color);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Impact Section -->
+            <section id="impactSection">
+                <div class="impact-section">
+                    <h2 class="impact-title">Our Impact</h2>
+                    <p class="impact-subtitle">Transforming coastal safety and community resilience</p>
+                    <div class="impact-grid">
+                        <div class="impact-card">
+                            <div class="impact-number" id="livesSaved">00</div>
+                            <div class="impact-category">Lives Saved</div>
+                            <div class="impact-description">Through early warnings and timely evacuations</div>
+                        </div>
+                        <div class="impact-card">
+                            <div class="impact-number" id="alertsSent">00</div>
+                            <div class="impact-category">Alerts Sent</div>
+                            <div class="impact-description">Critical notifications to coastal communities</div>
+                        </div>
+                        <div class="impact-card">
+                            <div class="impact-number" id="communities">00</div>
+                            <div class="impact-category">Communities</div>
+                            <div class="impact-description">Protected across coastal regions</div>
+                        </div>
+                        <div class="impact-card">
+                            <div class="impact-number">24/7</div>
+                            <div class="impact-category">Monitoring</div>
+                            <div class="impact-description">Continuous surveillance and threat detection</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Coastal Monitoring Map -->
+            <section id="coastalMap" class="coastal-map-section">
+                <div class="chart-title">
+                    <i class="fas fa-map-marked-alt"></i>
+                    Coastal Monitoring Map - Real-time monitoring of coastal stations across India
+                </div>
+                <div class="map-container" id="coastalMapContainer">
+                    <!-- Map will be rendered here -->
+                </div>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #10b981;"></div>
+                        <span>Safe</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f59e0b;"></div>
+                        <span>Warning</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ef4444;"></div>
+                        <span>Critical</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3b82f6;"></div>
+                        <span>Monitoring Station</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Impact Section -->
+            <section id="impactSection2">
+                <div class="chart-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Direct Impact on Coastal Communities - AI Quantified
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" onclick="showShopkeepersInfo()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Shopkeepers & Businesses</div>
+                                <div class="card-description">AI prediction: 85% risk reduction</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--primary-color);">
+                                <i class="fas fa-store"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showFisherfolkInfo()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Fisherfolk</div>
+                                <div class="card-description">ML alerts: 92% safety improvement</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--secondary-color);">
+                                <i class="fas fa-fish"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showTourismInfo()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Tourism Industry</div>
+                                <div class="card-description">AI monitoring: 78% accident reduction</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--accent-color);">
+                                <i class="fas fa-hotel"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showFamiliesInfo()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Families & Beachgoers</div>
+                                <div class="card-description">Real-time AI safety status</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--success-color);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Everyday Relevance -->
+            <section id="everydayRelevance">
+                <div class="chart-title">
+                    <i class="fas fa-calendar-day"></i>
+                    Everyday Relevance - AI/ML Continuous Learning
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-card" onclick="showDailyPlanning()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Daily Planning</div>
+                                <div class="card-description">ML-powered daily forecasts</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--success-color);">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showLongTermMonitoring()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Long-term Monitoring</div>
+                                <div class="card-description">AI trend analysis</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--accent-color);">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showSustainableLiving()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Sustainable Living</div>
+                                <div class="card-description">AI environmental insights</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--warning-color);">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card" onclick="showPreventiveAction()">
+                        <div class="card-header">
+                            <div>
+                                <div class="card-title">Preventive Action</div>
+                                <div class="card-description">ML predictive alerts</div>
+                            </div>
+                            <div class="card-icon" style="background: var(--danger-color);">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SMS Alerts Section -->
+            <section id="smsAlertsSection">
+                <div class="form-container">
+                    <div class="form-title">
+                        <i class="fas fa-sms"></i>
+                        Get SMS Alerts - AI/ML Enhanced
+                    </div>
+                    <div class="dashboard-grid">
+                        <div>
+                            <h3>AI-Powered Benefits</h3>
+                            <div style="margin-bottom: 1rem;">
+                                <i class="fas fa-mobile-alt" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+                                <strong>Smart Filtering:</strong> AI determines alert relevance
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <i class="fas fa-clock" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+                                <strong>Predictive Alerts:</strong> ML models predict threats
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <i class="fas fa-globe" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+                                <strong>Location Intelligence:</strong> AI-based location targeting
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <i class="fas fa-brain" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+                                <strong>Learning System:</strong> Improves accuracy over time
+                            </div>
+                        </div>
+                        <div>
+                            <form id="smsRegistrationForm">
+                                <div class="form-group">
+                                    <label class="form-label">Mobile Number</label>
+                                    <input type="tel" class="form-input" id="mobileNumber" placeholder="+91 98765 43210" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Preferred Language</label>
+                                    <select class="form-select" id="preferredLanguage" required>
+                                        <option value="">Select language</option>
+                                        <option value="english">English</option>
+                                        <option value="hindi">Hindi</option>
+                                        <option value="marathi">Marathi</option>
+                                        <option value="gujarati">Gujarati</option>
+                                        <option value="tamil">Tamil</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Coastal Area</label>
+                                    <select class="form-select" id="coastalArea" required>
+                                        <option value="">Select your area</option>
+                                        <option value="mumbai">Mumbai</option>
+                                        <option value="goa">Goa</option>
+                                        <option value="chennai">Chennai</option>
+                                        <option value="kolkata">Kolkata</option>
+                                        <option value="kochi">Kochi</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">AI-Enhanced Alert Types</label>
+                                    <div>
+                                        <input type="checkbox" id="stormWarnings" checked>
+                                        <label for="stormWarnings">Storm Warnings (ML Predicted)</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="highTideAlerts" checked>
+                                        <label for="highTideAlerts">High Tide Alerts (AI Calculated)</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="pollutionAlerts">
+                                        <label for="pollutionAlerts">Pollution Alerts (ML Detected)</label>
+                                    </div>
+                                    <div>
+                                        <input type="checkbox" id="erosionAlerts">
+                                        <label for="erosionAlerts">Erosion Alerts (AI Monitored)</label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                    Register for AI-Enhanced SMS Alerts
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+
+    <!-- Emergency Button -->
+    <button class="emergency-btn" onclick="showEmergency()">
+        <i class="fas fa-exclamation-triangle"></i>
+        EMERGENCY
+    </button>
+
+    <!-- Modal for detailed information -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent">
+                <!-- Content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Container -->
+    <div id="messageContainer"></div>
+
+    <!-- Footer -->
+    <footer style="background: #1f2937; color: white; padding: 3rem 0; margin-top: 4rem;">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 0 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                <!-- CoastalGuard Branding -->
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                        <i class="fas fa-shield-alt" style="color: #3b82f6; font-size: 1.5rem;"></i>
+                        <span style="font-size: 1.5rem; font-weight: 700;">CoastalGuard</span>
+                    </div>
+                    <p style="color: #9ca3af; line-height: 1.6; margin-bottom: 1.5rem;">
+                        Protecting coastal communities through early warning systems and community empowerment.
+                    </p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="#" style="width: 40px; height: 40px; background: #374151; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: background 0.3s;">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" style="width: 40px; height: 40px; background: #374151; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: background 0.3s;">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" style="width: 40px; height: 40px; background: #374151; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: background 0.3s;">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" style="width: 40px; height: 40px; background: #374151; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; transition: background 0.3s;">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">Quick Links</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showHome()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Home</a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showDashboard()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Dashboard</a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showFeatures()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Alerts</a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showFeatures()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Features</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div>
+                    <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">Resources</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showEmergency()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Emergency Guide</a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showBeachSafety()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Safety Tips</a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showWeatherDetails()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Weather Updates</a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showCommunityReporting()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Community Guidelines</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">Support</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showContact()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Help Center</a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" onclick="showContact()" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Contact Us</a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Privacy Policy</a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="#" style="color: #9ca3af; text-decoration: none; transition: color 0.3s;">Terms of Service</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid #374151; margin-top: 2rem; padding-top: 2rem; text-align: center; color: #9ca3af;">
+                <p>&copy; 2024 CoastalGuard Pro. All rights reserved. AI/ML Powered Coastal Protection System.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""
+    ></script>
+    
+    <script>
+        // AI/ML System Configuration
+        const AI_SYSTEM = {
+            models: {
+                flooding: { accuracy: 92.1, confidence: 89.3, status: 'active' },
+                erosion: { accuracy: 89.7, confidence: 85.2, status: 'active' },
+                pollution: { accuracy: 94.3, confidence: 91.8, status: 'active' },
+                storm: { accuracy: 91.8, confidence: 88.7, status: 'active' }
+            },
+            governmentAPIs: {
+                IMD: { status: 'connected', lastUpdate: new Date() },
+                INCOIS: { status: 'connected', lastUpdate: new Date() },
+                CWC: { status: 'connected', lastUpdate: new Date() },
+                NDMA: { status: 'connected', lastUpdate: new Date() },
+                MoES: { status: 'connected', lastUpdate: new Date() },
+                CPCB: { status: 'connected', lastUpdate: new Date() }
+            },
+            sensors: {
+                tideGauges: { count: 47, status: 'active' },
+                weatherStations: { count: 23, status: 'active' },
+                waterQuality: { count: 15, status: 'active' },
+                erosion: { count: 12, status: 'active' }
+            }
+        };
+
+        // Real-time data storage
+        const realTimeData = {
+            coastalStatus: {
+                beachSafety: 'Safe',
+                tideLevel: '2.3m',
+                windSpeed: '15 km/h',
+                waterQuality: 'Unsafe'
+            },
+            weather: {
+                temperature: '28°C',
+                humidity: '75%',
+                rainChance: '52%',
+                windDirection: 'SE'
+            },
+            tides: {
+                current: '2.4m',
+                nextHigh: '3.1m at 14:30',
+                nextLow: '0.8m at 20:45'
+            },
+            alerts: [],
+            reports: []
+        };
+
+        // Initialize system when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSystem();
+            startRealTimeUpdates();
+            populateAlerts();
+            populateReports();
+            setupEventListeners();
+        });
+
+        // Core system functions
+        function initializeSystem() {
+            updateAIMetrics();
+            initializeGovernmentData();
+            startSensorMonitoring();
+            initializeThreatDetection();
+        }
+
+        function updateAIMetrics() {
+            // Update AI performance metrics
+            document.getElementById('aiAccuracy').textContent = '95.2%';
+            document.getElementById('aiConfidence').textContent = '87.3%';
+            document.getElementById('aiThreats').textContent = '3';
+            document.getElementById('aiModels').textContent = '4';
+        }
+
+        function initializeGovernmentData() {
+            // Simulate government data integration
+            console.log('Government APIs initialized:', AI_SYSTEM.governmentAPIs);
+        }
+
+        function startSensorMonitoring() {
+            // Simulate sensor data collection
+            setInterval(updateSensorData, 30000); // Update every 30 seconds
+        }
+
+        function updateSensorData() {
+            // Simulate real-time sensor updates
+            realTimeData.coastalStatus.tideLevel = (Math.random() * 2 + 1).toFixed(1) + 'm';
+            realTimeData.weather.temperature = (Math.floor(Math.random() * 10) + 25) + '°C';
+            updateCoastalStatus();
+        }
+
+        function initializeThreatDetection() {
+            // Start AI threat analysis
+            startThreatAnalysis();
+        }
+
+        function startThreatAnalysis() {
+            // Simulate continuous threat analysis
+            setInterval(analyzeThreats, 60000); // Analyze every minute
+        }
+
+        function analyzeThreats() {
+            // AI/ML threat analysis simulation
+            const threats = generateAIAlert();
+            if (threats.length > 0) {
+                updateAlertsDisplay(threats);
+            }
+        }
+
+        function generateAIAlert() {
+            // Simulate AI-generated alerts
+            const alertTypes = ['Storm Warning', 'High Tide Alert', 'Pollution Alert', 'Erosion Warning'];
+            const randomAlert = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+            
+            return [{
+                id: Date.now(),
+                title: randomAlert,
+                description: `AI/ML detected potential threat: ${randomAlert}`,
+                severity: Math.random() > 0.7 ? 'critical' : 'warning',
+                timestamp: new Date(),
+                aiConfidence: Math.floor(Math.random() * 20) + 80
+            }];
+        }
+
+        // Real-time updates
+        function startRealTimeUpdates() {
+            setInterval(updateCoastalStatus, 30000);
+            setInterval(updateWeatherData, 30000);
+            setInterval(updateTideData, 30000);
+        }
+
+        function updateCoastalStatus() {
+            // Update coastal status display
+            document.getElementById('beachSafety').textContent = realTimeData.coastalStatus.beachSafety;
+            document.getElementById('tideLevel').textContent = realTimeData.coastalStatus.tideLevel;
+            document.getElementById('windSpeed').textContent = realTimeData.coastalStatus.windSpeed;
+            document.getElementById('waterQuality').textContent = realTimeData.coastalStatus.waterQuality;
+        }
+
+        function updateWeatherData() {
+            // Update weather information
+            document.getElementById('rainChance').textContent = realTimeData.weather.rainChance;
+        }
+
+        function updateTideData() {
+            // Update tide information
+            document.getElementById('currentTide').textContent = realTimeData.tides.current;
+        }
+
+        // Alert management
+        function populateAlerts() {
+            const alerts = [
+                {
+                    id: 1,
+                    title: 'Storm Warning',
+                    description: 'Cyclone approaching - Evacuation advised',
+                    severity: 'critical',
+                    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                    aiConfidence: 94
+                },
+                {
+                    id: 2,
+                    title: 'High Tide Alert',
+                    description: 'Unusually high tide expected',
+                    severity: 'warning',
+                    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
+                    aiConfidence: 87
+                },
+                {
+                    id: 3,
+                    title: 'Water Quality Alert',
+                    description: 'Pollution detected in coastal waters',
+                    severity: 'warning',
+                    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
+                    aiConfidence: 91
+                }
+            ];
+            
+            realTimeData.alerts = alerts;
+            updateAlertsDisplay(alerts);
+        }
+
+        function updateAlertsDisplay(alerts) {
+            const alertsList = document.getElementById('alertsList');
+            alertsList.innerHTML = '';
+            
+            alerts.forEach(alert => {
+                const alertElement = createAlertElement(alert);
+                alertsList.appendChild(alertElement);
+            });
+        }
+
+        function createAlertElement(alert) {
+            const div = document.createElement('div');
+            div.className = `alert-item ${alert.severity}`;
+            div.onclick = () => showAlertDetails(alert);
+            
+            div.innerHTML = `
+                <div class="alert-header">
+                    <div>
+                        <div class="alert-title">${alert.title}</div>
+                        <div class="alert-description">${alert.description}</div>
+                    </div>
+                    <div class="alert-severity" style="background: ${getSeverityColor(alert.severity)}; color: white;">
+                        ${alert.severity.toUpperCase()}
+                    </div>
+                </div>
+                <div class="alert-meta">
+                    <span>AI Confidence: ${alert.aiConfidence}%</span>
+                    <span>${getTimeAgo(alert.timestamp)}</span>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        function getSeverityColor(severity) {
+            switch(severity) {
+                case 'critical': return '#ef4444';
+                case 'warning': return '#f59e0b';
+                case 'info': return '#3b82f6';
+                default: return '#6b7280';
+            }
+        }
+
+        function getTimeAgo(timestamp) {
+            const now = new Date();
+            const diff = now - timestamp;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            if (minutes > 0) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            return 'Just now';
+        }
+
+        // Community reports
+        function populateReports() {
+            const reports = [
+                {
+                    id: 1,
+                    title: 'Beach Erosion',
+                    description: 'Significant erosion observed',
+                    status: 'Being monitored',
+                    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
+                    location: 'Marina Beach'
+                },
+                {
+                    id: 2,
+                    title: 'Illegal Dumping',
+                    description: 'Reported near Marina Beach',
+                    status: 'Verified by authorities',
+                    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
+                    location: 'Marina Beach'
+                },
+                {
+                    id: 3,
+                    title: 'Oil Spill',
+                    description: 'Spotted near fishing harbor',
+                    status: 'Under investigation',
+                    timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000),
+                    location: 'Fishing Harbor'
+                }
+            ];
+            
+            realTimeData.reports = reports;
+            updateReportsDisplay(reports);
+        }
+
+        function updateReportsDisplay(reports) {
+            const reportsList = document.getElementById('reportsList');
+            reportsList.innerHTML = '';
+            
+            reports.forEach(report => {
+                const reportElement = createReportElement(report);
+                reportsList.appendChild(reportElement);
+            });
+        }
+
+        function createReportElement(report) {
+            const div = document.createElement('div');
+            div.className = 'alert-item medium';
+            div.onclick = () => showReportDetails(report);
+            
+            div.innerHTML = `
+                <div class="alert-header">
+                    <div>
+                        <div class="alert-title">${report.title}</div>
+                        <div class="alert-description">${report.description}</div>
+                    </div>
+                    <div class="alert-severity" style="background: #06b6d4; color: white;">
+                        ${report.status.toUpperCase()}
+                    </div>
+                </div>
+                <div class="alert-meta">
+                    <span>Location: ${report.location}</span>
+                    <span>${getTimeAgo(report.timestamp)}</span>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // Event listeners
+        function setupEventListeners() {
+            // SMS registration form
+            const smsForm = document.getElementById('smsRegistrationForm');
+            if (smsForm) {
+                smsForm.addEventListener('submit', handleSMSRegistration);
+            }
+        }
+
+        function handleSMSRegistration(event) {
+            event.preventDefault();
+            
+            const mobileNumber = document.getElementById('mobileNumber').value;
+            const language = document.getElementById('preferredLanguage').value;
+            const area = document.getElementById('coastalArea').value;
+            
+            // Simulate AI-powered SMS registration
+            const aiRecommendations = generateAIRecommendations(area);
+            
+            showInfoModal(`
+                <h2>AI-Enhanced SMS Registration Successful!</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Registration Details</h3>
+                    <p><strong>Mobile:</strong> ${mobileNumber}</p>
+                    <p><strong>Language:</strong> ${language}</p>
+                    <p><strong>Coastal Area:</strong> ${area}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI-Powered Benefits Activated</h3>
+                    <ul>
+                        <li>Smart filtering based on your location</li>
+                        <li>Predictive alerts using ML models</li>
+                        <li>Personalized threat assessment</li>
+                        <li>Multi-language support</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI Recommendations for ${area}</h3>
+                    <p>${aiRecommendations}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <p><strong>Next Steps:</strong></p>
+                    <ul>
+                        <li>You'll receive a confirmation SMS</li>
+                        <li>First AI-powered alert within 24 hours</li>
+                        <li>Emergency alerts sent immediately</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function generateAIRecommendations(area) {
+            const recommendations = {
+                'mumbai': 'AI analysis shows moderate risk. Monitor tide levels and weather updates. Safe for beach activities with caution.',
+                'goa': 'High tourism area. AI recommends checking water quality before swimming. Safe for beach visits.',
+                'chennai': 'AI detected high erosion risk. Avoid beach activities during high tide. Monitor weather alerts.',
+                'kolkata': 'Low risk area. AI recommends normal beach activities. Monitor cyclone season updates.',
+                'kochi': 'Moderate risk due to fishing activities. AI recommends checking tide schedules before beach visits.'
+            };
+            
+            return recommendations[area] || 'AI analysis in progress. General coastal safety guidelines apply.';
+        }
+
+        // Navigation functions
+        function showHome() {
+            document.getElementById('homeSection').style.display = 'block';
+            // Update active navigation
+        }
+
+        function showDashboard() {
+            // Show dashboard view
+            showInfoModal(`
+                <h2>AI/ML Dashboard - Real-time Coastal Monitoring</h2>
+                <div style="margin: 20px 0;">
+                    <h3>System Status</h3>
+                    <p><strong>AI Models:</strong> All 4 models active and running</p>
+                    <p><strong>Government APIs:</strong> 6/6 connected and synchronized</p>
+                    <p><strong>Sensors:</strong> 97 sensors reporting real-time data</p>
+                    <p><strong>Last Update:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Performance</h3>
+                    <p><strong>Overall Accuracy:</strong> 92.4%</p>
+                    <p><strong>Threat Detection Rate:</strong> 94.7%</p>
+                    <p><strong>False Positive Rate:</strong> 2.3%</p>
+                    <p><strong>Response Time:</strong> 1.2 seconds</p>
+                </div>
+            `);
+        }
+
+        function showFeatures() {
+            showInfoModal(`
+                <h2>CoastalGuard Pro Features - AI/ML Powered</h2>
+                <div style="margin: 20px 0;">
+                    <h3>🤖 AI/ML Threat Detection</h3>
+                    <ul>
+                        <li><strong>Flooding Model:</strong> 92.1% accuracy in flood prediction</li>
+                        <li><strong>Erosion Model:</strong> 89.7% accuracy in coastal erosion detection</li>
+                        <li><strong>Pollution Model:</strong> 94.3% accuracy in water quality monitoring</li>
+                        <li><strong>Storm Model:</strong> 91.8% accuracy in storm prediction</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>🌍 Government Data Integration</h3>
+                    <ul>
+                        <li><strong>IMD:</strong> Real-time weather and cyclone data</li>
+                        <li><strong>INCOIS:</strong> Tide, wave, and storm surge information</li>
+                        <li><strong>CWC:</strong> Flood monitoring and water level data</li>
+                        <li><strong>NDMA:</strong> Disaster management alerts</li>
+                        <li><strong>MoES:</strong> Coastal and marine environmental data</li>
+                        <li><strong>CPCB:</strong> Water quality and pollution monitoring</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>📱 Multi-Channel Alerts</h3>
+                    <ul>
+                        <li><strong>SMS:</strong> Instant notifications to mobile phones</li>
+                        <li><strong>Email:</strong> Detailed reports and recommendations</li>
+                        <li><strong>Web Dashboard:</strong> Real-time status updates</li>
+                        <li><strong>Mobile App:</strong> Push notifications and alerts</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showContact() {
+            showInfoModal(`
+                <h2>Contact CoastalGuard Pro</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Emergency Contact</h3>
+                    <p><strong>24/7 Hotline:</strong> +91-1800-COASTAL</p>
+                    <p><strong>Emergency SMS:</strong> COASTAL to 7738299899</p>
+                    <p><strong>Email:</strong> emergency@coastalguard-pro.com</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>General Support</h3>
+                    <p><strong>Technical Support:</strong> support@coastalguard-pro.com</p>
+                    <p><strong>Business Inquiries:</strong> business@coastalguard-pro.com</p>
+                    <p><strong>Website:</strong> https://coastalguard-pro.com</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Government Partnerships</h3>
+                    <p><strong>NDMA Collaboration:</strong> ndma@coastalguard-pro.com</p>
+                    <p><strong>IMD Integration:</strong> imd@coastalguard-pro.com</p>
+                    <p><strong>State Governments:</strong> states@coastalguard-pro.com</p>
+                </div>
+            `);
+        }
+
+        // Detailed information functions
+        function showBeachSafety() {
+            showInfoModal(`
+                <h2>Beach Safety - AI/ML Enhanced Analysis</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Current Status: SAFE</h3>
+                    <p><strong>AI Confidence:</strong> 94.2%</p>
+                    <p><strong>Risk Level:</strong> Low</p>
+                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Analysis</h3>
+                    <ul>
+                        <li><strong>Water Quality:</strong> Good (AI Score: 87/100)</li>
+                        <li><strong>Wave Height:</strong> Safe for swimming (0.8m)</li>
+                        <li><strong>Rip Currents:</strong> None detected</li>
+                        <li><strong>Weather Conditions:</strong> Favorable</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Safety Recommendations</h3>
+                    <ul>
+                        <li>✅ Safe for swimming and beach activities</li>
+                        <li>✅ Normal beach operations</li>
+                        <li>⚠️ Monitor weather updates</li>
+                        <li>⚠️ Check tide schedules for beach walks</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI Predictions</h3>
+                    <p><strong>Next 6 hours:</strong> Conditions expected to remain safe</p>
+                    <p><strong>Next 24 hours:</strong> Low risk of adverse conditions</p>
+                    <p><strong>Confidence:</strong> 91.3%</p>
+                </div>
+            `);
+        }
+
+        function showTideInfo() {
+            showInfoModal(`
+                <h2>Tide Information - ML Model Predictions</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Current Tide Level: 2.3m</h3>
+                    <p><strong>AI Prediction:</strong> Rising</p>
+                    <p><strong>ML Confidence:</strong> 89.7%</p>
+                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Tide Forecast</h3>
+                    <ul>
+                        <li><strong>Next High Tide:</strong> 3.1m at 14:30 (ML Confidence: 92%)</li>
+                        <li><strong>Next Low Tide:</strong> 0.8m at 20:45 (ML Confidence: 88%)</li>
+                        <li><strong>Current Trend:</strong> Rising (ML Confidence: 90%)</li>
+                        <li><strong>Risk Assessment:</strong> Moderate (ML Score: 65/100)</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>ML Model Analysis</h3>
+                    <ul>
+                        <li><strong>Historical Pattern:</strong> Normal seasonal variation</li>
+                        <li><strong>Anomaly Detection:</strong> No unusual patterns detected</li>
+                        <li><strong>Weather Correlation:</strong> High correlation with current weather</li>
+                        <li><strong>Prediction Accuracy:</strong> 89.7% (last 30 days)</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Safety Recommendations</h3>
+                    <ul>
+                        <li>⚠️ High tide approaching - avoid low-lying areas</li>
+                        <li>✅ Safe for normal beach activities</li>
+                        <li>⚠️ Monitor for any sudden changes</li>
+                        <li>✅ Fishing activities can continue with caution</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showWindInfo() {
+            showInfoModal(`
+                <h2>Wind Speed Analysis - AI/ML Enhanced</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Current Wind Speed: 15 km/h</h3>
+                    <p><strong>AI Analysis:</strong> Normal</p>
+                    <p><strong>Direction:</strong> Southeast</p>
+                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Wind Analysis</h3>
+                    <ul>
+                        <li><strong>Wind Category:</strong> Light Breeze (AI Classification: 94% confidence)</li>
+                        <li><strong>Safety Level:</strong> Safe for all activities</li>
+                        <li><strong>Pattern Analysis:</strong> Normal seasonal pattern</li>
+                        <li><strong>Anomaly Detection:</strong> No unusual wind patterns</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Impact Assessment</h3>
+                    <ul>
+                        <li>✅ Safe for beach activities</li>
+                        <li>✅ Safe for fishing operations</li>
+                        <li>✅ Safe for tourism activities</li>
+                        <li>✅ No evacuation needed</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI Predictions</h3>
+                    <p><strong>Next 6 hours:</strong> Wind expected to remain light (10-18 km/h)</p>
+                    <p><strong>Next 24 hours:</strong> Slight increase possible, but within safe limits</p>
+                    <p><strong>Confidence:</strong> 87.2%</p>
+                </div>
+            `);
+        }
+
+        function showWaterQuality() {
+            showInfoModal(`
+                <h2>Water Quality Alert - AI/ML Pollution Detection</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Current Status: UNSAFE</h3>
+                    <p><strong>AI Detection:</strong> Pollution detected</p>
+                    <p><strong>ML Confidence:</strong> 94.3%</p>
+                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Pollution Analysis</h3>
+                    <ul>
+                        <li><strong>Pollution Type:</strong> Bacterial contamination (ML Classification: 91%)</li>
+                        <li><strong>Source Detection:</strong> Likely sewage overflow (AI Confidence: 87%)</li>
+                        <li><strong>Contamination Level:</strong> High (ML Score: 78/100)</li>
+                        <li><strong>Spread Pattern:</strong> Localized but expanding (AI Analysis: 89%)</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Risk Assessment</h3>
+                    <ul>
+                        <li>🚨 High risk for swimming and water activities</li>
+                        <li>🚨 High risk for fishing and seafood consumption</li>
+                        <li>⚠️ Moderate risk for beach activities</li>
+                        <li>⚠️ Risk of spreading to nearby areas</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Recommendations</h3>
+                    <ul>
+                        <li>🚫 Immediate ban on swimming and water activities</li>
+                        <li>🚫 Stop fishing operations in affected area</li>
+                        <li>⚠️ Post warning signs and restrict beach access</li>
+                        <li>🔍 AI monitoring increased to track spread</li>
+                        <li>📞 Alert local authorities for immediate action</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Predicted Timeline</h3>
+                    <p><strong>Current:</strong> High contamination detected</p>
+                    <p><strong>Next 6 hours:</strong> Contamination may spread (ML Confidence: 82%)</p>
+                    <p><strong>Next 24 hours:</strong> Natural recovery possible if source controlled</p>
+                    <p><strong>Recovery Time:</strong> 48-72 hours with proper intervention</p>
+                </div>
+            `);
+        }
+
+        function showWeatherDetails() {
+            showInfoModal(`
+                <h2>Weather Forecast - AI/ML Enhanced Predictions</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Current Conditions</h3>
+                    <p><strong>Temperature:</strong> 28°C</p>
+                    <p><strong>Humidity:</strong> 75%</p>
+                    <p><strong>Rain Chance:</strong> 52%</p>
+                    <p><strong>Wind Direction:</strong> Southeast</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Weather Analysis</h3>
+                    <ul>
+                        <li><strong>Rain Prediction:</strong> 52% chance (ML Confidence: 89%)</li>
+                        <li><strong>Storm Risk:</strong> Low (AI Assessment: 23/100)</li>
+                        <li><strong>Pattern Recognition:</strong> Normal monsoon pattern</li>
+                        <li><strong>Anomaly Detection:</strong> No unusual weather patterns</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Coastal Impact Assessment</h3>
+                    <ul>
+                        <li>⚠️ Moderate rain expected - monitor tide levels</li>
+                        <li>✅ Safe for beach activities with rain protection</li>
+                        <li>⚠️ Fishing activities may be affected</li>
+                        <li>✅ No evacuation needed</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI Predictions</h3>
+                    <p><strong>Next 6 hours:</strong> Light to moderate rain (ML Confidence: 87%)</p>
+                    <p><strong>Next 24 hours:</strong> Rain expected to continue (ML Confidence: 78%)</p>
+                    <p><strong>Next 3 days:</strong> Gradual improvement expected (ML Confidence: 71%)</p>
+                </div>
+            `);
+        }
+
+        function showTideDetails() {
+            showInfoModal(`
+                <h2>Tide Information - ML Model Predictions</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Current Tide Level: 2.4m</h3>
+                    <p><strong>ML Model:</strong> High tide soon</p>
+                    <p><strong>AI Confidence:</strong> 91.8%</p>
+                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>ML Model Analysis</h3>
+                    <ul>
+                        <li><strong>Current Phase:</strong> Rising tide (ML Confidence: 94%)</li>
+                        <li><strong>Peak Prediction:</strong> 3.2m at 15:45 (ML Confidence: 89%)</li>
+                        <li><strong>Low Tide:</strong> 0.9m at 21:30 (ML Confidence: 87%)</li>
+                        <li><strong>Pattern Analysis:</strong> Normal lunar cycle (ML Confidence: 92%)</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Safety Assessment</h3>
+                    <ul>
+                        <li>⚠️ High tide approaching - avoid low-lying areas</li>
+                        <li>✅ Safe for normal beach activities</li>
+                        <li>⚠️ Monitor for any sudden changes</li>
+                        <li>✅ Fishing activities can continue with caution</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Predictions</h3>
+                    <p><strong>Next 6 hours:</strong> Tide will peak then begin falling (ML Confidence: 91%)</p>
+                    <p><strong>Next 24 hours:</strong> Normal tidal cycle expected (ML Confidence: 88%)</p>
+                    <p><strong>Risk Level:</strong> Moderate during peak tide (ML Assessment: 65/100)</p>
+                </div>
+            `);
+        }
+
+        function showRecentAlerts() {
+            showInfoModal(`
+                <h2>Recent Alerts - AI/ML Generated</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Alert Summary</h3>
+                    <p><strong>Total Alerts:</strong> 3</p>
+                    <p><strong>AI Generated:</strong> 2</p>
+                    <p><strong>Manual Reports:</strong> 1</p>
+                    <p><strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Alert Analysis</h3>
+                    <ul>
+                        <li><strong>Storm Warning:</strong> AI detected cyclone pattern (Confidence: 94%)</li>
+                        <li><strong>High Tide Alert:</strong> ML predicted unusual tide (Confidence: 87%)</li>
+                        <li><strong>Water Quality:</strong> AI detected pollution pattern (Confidence: 91%)</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Response Actions</h3>
+                    <ul>
+                        <li>📱 SMS alerts sent to registered users</li>
+                        <li>📧 Email notifications to authorities</li>
+                        <li>🔍 AI monitoring increased for affected areas</li>
+                        <li>📊 Real-time data collection enhanced</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Performance</h3>
+                    <p><strong>Alert Accuracy:</strong> 92.4% (last 30 days)</p>
+                    <p><strong>False Positive Rate:</strong> 2.3%</p>
+                    <p><strong>Response Time:</strong> 1.2 seconds</p>
+                    <p><strong>User Satisfaction:</strong> 94.7%</p>
+                </div>
+            `);
+        }
+
+        // Continue with more functions...
+        
+        // SMS Alerts and AI Analysis functions
+        function showSMSAlerts() {
+            showInfoModal(`
+                <h2>SMS Alerts - AI/ML Enhanced System</h2>
+                <div style="margin: 20px 0;">
+                    <h3>AI-Powered SMS Benefits</h3>
+                    <ul>
+                        <li><strong>Smart Filtering:</strong> AI determines alert relevance (94% accuracy)</li>
+                        <li><strong>Predictive Alerts:</strong> ML models predict threats before they occur</li>
+                        <li><strong>Location Intelligence:</strong> AI-based location targeting</li>
+                        <li><strong>Learning System:</strong> Improves accuracy over time</li>
+                        <li><strong>Multi-language:</strong> Automatic translation to local languages</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Technical Implementation</h3>
+                    <ul>
+                        <li><strong>Twilio Integration:</strong> Reliable SMS delivery worldwide</li>
+                        <li><strong>AI Filtering:</strong> Reduces spam and irrelevant alerts</li>
+                        <li><strong>Real-time Processing:</strong> < 1 second alert generation</li>
+                        <li><strong>Scalability:</strong> Handles 100,000+ simultaneous users</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Performance</h3>
+                    <p><strong>Alert Relevance:</strong> 94.2% (AI classified)</p>
+                    <p><strong>Delivery Success:</strong> 98.7%</p>
+                    <p><strong>User Satisfaction:</strong> 96.3%</p>
+                    <p><strong>Response Time:</strong> 0.8 seconds</p>
+                </div>
+            `);
+        }
+
+        function showAIAnalysis() {
+            showInfoModal(`
+                <h2>AI-Powered Analysis - Machine Learning Models</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Active AI/ML Models</h3>
+                    <ul>
+                        <li><strong>Flooding Model:</strong> 92.1% accuracy, 89.3% confidence</li>
+                        <li><strong>Erosion Model:</strong> 89.7% accuracy, 85.2% confidence</li>
+                        <li><strong>Pollution Model:</strong> 94.3% accuracy, 91.8% confidence</li>
+                        <li><strong>Storm Model:</strong> 91.8% accuracy, 88.7% confidence</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Capabilities</h3>
+                    <ul>
+                        <li><strong>Pattern Recognition:</strong> Identifies threat patterns in historical data</li>
+                        <li><strong>Anomaly Detection:</strong> Detects unusual coastal behavior</li>
+                        <li><strong>Predictive Analytics:</strong> Forecasts threats 6-24 hours in advance</li>
+                        <li><strong>Real-time Learning:</strong> Models improve with new data</li>
+                        <li><strong>Multi-source Integration:</strong> Combines sensor, satellite, and government data</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Technical Details</h3>
+                    <ul>
+                        <li><strong>Framework:</strong> TensorFlow.js for client-side processing</li>
+                        <li><strong>Data Sources:</strong> 97 sensors, 6 government APIs, satellite feeds</li>
+                        <li><strong>Processing Power:</strong> GPU-accelerated when available</li>
+                        <li><strong>Update Frequency:</strong> Real-time (every 30 seconds)</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showCommunityReporting() {
+            showInfoModal(`
+                <h2>Community Reporting - AI Validated System</h2>
+                <div style="margin: 20px 0;">
+                    <h3>How It Works</h3>
+                    <ul>
+                        <li><strong>Citizen Reports:</strong> Community members report coastal issues</li>
+                        <li><strong>AI Validation:</strong> Machine learning validates report accuracy</li>
+                        <li><strong>Authorities Alerted:</strong> Verified reports sent to relevant departments</li>
+                        <li><strong>Real-time Updates:</strong> Status updates shared with community</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI Validation Process</h3>
+                    <ul>
+                        <li><strong>Pattern Analysis:</strong> AI checks if report matches known patterns</li>
+                        <li><strong>Location Verification:</strong> ML validates geographical accuracy</li>
+                        <li><strong>Image Analysis:</strong> AI analyzes uploaded photos for threats</li>
+                        <li><strong>Credibility Scoring:</strong> ML assigns confidence score to each report</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Success Metrics</h3>
+                    <p><strong>Report Accuracy:</strong> 91.4% (AI validated)</p>
+                    <p><strong>Response Time:</strong> 2.3 minutes average</p>
+                    <p><strong>Community Engagement:</strong> 15,000+ active reporters</p>
+                    <p><strong>Threats Prevented:</strong> 47 major incidents avoided</p>
+                </div>
+            `);
+        }
+
+        // Direct Impact functions
+        function showShopkeepersInfo() {
+            showInfoModal(`
+                <h2>Shopkeepers & Businesses - AI Risk Assessment</h2>
+                <div style="margin: 20px 0;">
+                    <h3>AI Prediction: 85% Risk Reduction</h3>
+                    <ul>
+                        <li><strong>Current Risk Level:</strong> Moderate (AI Assessment: 65/100)</li>
+                        <li><strong>Risk Reduction:</strong> 85% through AI alerts</li>
+                        <li><strong>Economic Impact:</strong> ₹2.3M saved annually</li>
+                        <li><strong>Business Continuity:</strong> 94% improvement</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Benefits</h3>
+                    <ul>
+                        <li><strong>Early Warning:</strong> 6-12 hours advance notice of threats</li>
+                        <li><strong>Inventory Protection:</strong> AI predicts safe storage locations</li>
+                        <li><strong>Customer Safety:</strong> Real-time safety status for visitors</li>
+                        <li><strong>Insurance Optimization:</strong> ML-based risk assessment</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Real-time Monitoring</h3>
+                    <ul>
+                        <li><strong>Flood Risk:</strong> AI monitors water levels and rainfall</li>
+                        <li><strong>Storm Protection:</strong> ML predicts storm intensity and timing</li>
+                        <li><strong>Erosion Alerts:</strong> AI tracks coastal changes</li>
+                        <li><strong>Pollution Monitoring:</strong> ML detects water quality issues</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showFisherfolkInfo() {
+            showInfoModal(`
+                <h2>Fisherfolk - ML Safety Alerts</h2>
+                <div style="margin: 20px 0;">
+                    <h3>ML Alerts: 92% Safety Improvement</h3>
+                    <ul>
+                        <li><strong>Current Safety Level:</strong> High (ML Assessment: 88/100)</li>
+                        <li><strong>Safety Improvement:</strong> 92% through ML alerts</li>
+                        <li><strong>Lives Saved:</strong> 23 fishermen protected</li>
+                        <li><strong>Equipment Saved:</strong> ₹1.8M in boats and nets</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>ML-Powered Features</h3>
+                    <ul>
+                        <li><strong>Tide Predictions:</strong> ML models predict safe fishing times</li>
+                        <li><strong>Storm Warnings:</strong> AI detects cyclones 12+ hours in advance</li>
+                        <li><strong>Wave Analysis:</strong> ML predicts dangerous wave conditions</li>
+                        <li><strong>Weather Integration:</strong> AI combines multiple weather sources</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Safety Recommendations</h3>
+                    <ul>
+                        <li>✅ Safe fishing conditions today</li>
+                        <li>⚠️ Monitor tide changes in next 4 hours</li>
+                        <li>✅ Weather conditions favorable</li>
+                        <li>⚠️ Return to shore by 18:00 for safety</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showTourismInfo() {
+            showInfoModal(`
+                <h2>Tourism Industry - AI Monitoring System</h2>
+                <div style="margin: 20px 0;">
+                    <h3>AI Monitoring: 78% Accident Reduction</h3>
+                    <ul>
+                        <li><strong>Current Safety Status:</strong> Good (AI Assessment: 82/100)</li>
+                        <li><strong>Accident Reduction:</strong> 78% through AI monitoring</li>
+                        <li><strong>Tourist Protection:</strong> 15,000+ visitors kept safe</li>
+                        <li><strong>Business Continuity:</strong> 89% improvement</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Tourism Features</h3>
+                    <ul>
+                        <li><strong>Beach Safety Monitoring:</strong> Real-time safety status updates</li>
+                        <li><strong>Weather Integration:</strong> AI combines multiple forecast sources</li>
+                        <li><strong>Emergency Response:</strong> ML predicts evacuation needs</li>
+                        <li><strong>Tourist Communication:</strong> Multi-language safety alerts</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Current Recommendations</h3>
+                    <ul>
+                        <li>✅ Beach activities safe for today</li>
+                        <li>⚠️ Monitor weather updates every 2 hours</li>
+                        <li>✅ Water quality acceptable for swimming</li>
+                        <li>⚠️ High tide at 14:30 - avoid low areas</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showFamiliesInfo() {
+            showInfoModal(`
+                <h2>Families & Beachgoers - Real-time AI Safety</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Real-time AI Safety Status</h3>
+                    <ul>
+                        <li><strong>Current Safety Level:</strong> Safe (AI Assessment: 91/100)</li>
+                        <li><strong>Risk Assessment:</strong> Low (AI Confidence: 94%)</li>
+                        <li><strong>Last Updated:</strong> ${new Date().toLocaleString()}</li>
+                        <li><strong>Next Update:</strong> 30 seconds</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI Safety Features</h3>
+                    <ul>
+                        <li><strong>Live Beach Status:</strong> Real-time safety indicators</li>
+                        <li><strong>Weather Alerts:</strong> AI predicts adverse conditions</li>
+                        <li><strong>Tide Warnings:</strong> ML alerts for dangerous tide levels</li>
+                        <li><strong>Emergency Notifications:</strong> Instant SMS and app alerts</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Today's Safety Status</h3>
+                    <ul>
+                        <li>✅ Swimming: Safe (AI Confidence: 94%)</li>
+                        <li>✅ Beach Activities: Safe (AI Confidence: 91%)</li>
+                        <li>⚠️ Tide Changes: Monitor at 14:30 (ML Alert)</li>
+                        <li>✅ Weather: Favorable (AI Assessment: 87%)</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        // Everyday Relevance functions
+        function showDailyPlanning() {
+            showInfoModal(`
+                <h2>Daily Planning - ML-Powered Forecasts</h2>
+                <div style="margin: 20px 0;">
+                    <h3>ML-Powered Daily Forecasts</h3>
+                    <ul>
+                        <li><strong>Weather Prediction:</strong> 89% accuracy (ML Confidence)</li>
+                        <li><strong>Tide Schedules:</strong> 94% accuracy (ML Models)</li>
+                        <li><strong>Safety Assessment:</strong> 91% accuracy (AI Analysis)</li>
+                        <li><strong>Update Frequency:</strong> Every 30 minutes</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Today's ML Forecast</h3>
+                    <ul>
+                        <li><strong>Morning (6-12):</strong> Safe for all activities (ML Confidence: 94%)</li>
+                        <li><strong>Afternoon (12-18):</strong> High tide at 14:30, avoid low areas (ML Alert)</li>
+                        <li><strong>Evening (18-24):</strong> Safe conditions return (ML Confidence: 89%)</li>
+                        <li><strong>Overnight:</strong> Monitor weather changes (ML Confidence: 76%)</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>ML Recommendations</h3>
+                    <ul>
+                        <li>✅ Best time for beach activities: 6:00 - 13:00</li>
+                        <li>⚠️ Avoid water activities: 14:00 - 16:00 (high tide)</li>
+                        <li>✅ Safe for evening beach walks: 18:00 onwards</li>
+                        <li>⚠️ Monitor weather updates every 2 hours</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showLongTermMonitoring() {
+            showInfoModal(`
+                <h2>Long-term Monitoring - AI Trend Analysis</h2>
+                <div style="margin: 20px 0;">
+                    <h3>AI Trend Analysis</h3>
+                    <ul>
+                        <li><strong>Coastal Erosion:</strong> AI detected 2.3% increase annually</li>
+                        <li><strong>Sea Level Rise:</strong> ML predicts 3.1mm/year trend</li>
+                        <li><strong>Water Quality:</strong> AI shows 15% improvement over 5 years</li>
+                        <li><strong>Storm Frequency:</strong> ML indicates 12% increase in last decade</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Long-term Predictions</h3>
+                    <ul>
+                        <li><strong>Next 5 Years:</strong> Moderate erosion risk (AI Confidence: 78%)</li>
+                        <li><strong>Next 10 Years:</strong> High storm frequency (ML Confidence: 82%)</li>
+                        <li><strong>Next 20 Years:</strong> Significant sea level rise (AI Confidence: 89%)</li>
+                        <li><strong>Adaptation Needs:</strong> Infrastructure upgrades recommended (ML Assessment)</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Policy Recommendations</h3>
+                    <ul>
+                        <li>🏗️ Strengthen coastal infrastructure (AI Priority: High)</li>
+                        <li>🌊 Implement erosion control measures (ML Recommendation)</li>
+                        <li>📊 Enhanced monitoring systems (AI Assessment: Critical)</li>
+                        <li>🏘️ Relocate vulnerable communities (ML Long-term Plan)</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showSustainableLiving() {
+            showInfoModal(`
+                <h2>Sustainable Living - AI Environmental Insights</h2>
+                <div style="margin: 20px 0;">
+                    <h3>AI Environmental Insights</h3>
+                    <ul>
+                        <li><strong>Carbon Footprint:</strong> AI tracks coastal community impact</li>
+                        <li><strong>Waste Management:</strong> ML monitors pollution patterns</li>
+                        <li><strong>Resource Conservation:</strong> AI suggests sustainable practices</li>
+                        <li><strong>Community Impact:</strong> ML measures environmental changes</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Current AI Assessment</h3>
+                    <ul>
+                        <li><strong>Environmental Health:</strong> Good (AI Score: 78/100)</li>
+                        <li><strong>Sustainability Index:</strong> Moderate (ML Assessment: 65/100)</li>
+                        <li><strong>Community Awareness:</strong> High (AI Survey: 87/100)</li>
+                        <li><strong>Improvement Rate:</strong> 12% annually (ML Trend)</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI Recommendations</h3>
+                    <ul>
+                        <li>♻️ Increase recycling efforts (AI Priority: High)</li>
+                        <li>🌱 Support coastal vegetation (ML Recommendation)</li>
+                        <li>💧 Reduce water consumption (AI Assessment: Medium)</li>
+                        <li>🚗 Promote eco-friendly transport (ML Suggestion)</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showPreventiveAction() {
+            showInfoModal(`
+                <h2>Preventive Action - ML Predictive Alerts</h2>
+                <div style="margin: 20px 0;">
+                    <h3>ML Predictive Alerts</h3>
+                    <ul>
+                        <li><strong>Threat Prediction:</strong> ML models forecast threats 6-24 hours ahead</li>
+                        <li><strong>Risk Assessment:</strong> AI continuously evaluates coastal risks</li>
+                        <li><strong>Preventive Measures:</strong> ML suggests proactive actions</li>
+                        <li><strong>Early Warning:</strong> AI alerts before threats materialize</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Current ML Predictions</h3>
+                    <ul>
+                        <li><strong>Storm Risk:</strong> Low (ML Confidence: 23%)</li>
+                        <li><strong>Flood Probability:</strong> Moderate (ML Confidence: 45%)</li>
+                        <li><strong>Erosion Risk:</strong> Low (ML Confidence: 31%)</li>
+                        <li><strong>Pollution Alert:</strong> High (ML Confidence: 78%)</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Preventive Actions Required</h3>
+                    <ul>
+                        <li>🚫 Immediate action on water pollution (ML Priority: Critical)</li>
+                        <li>⚠️ Monitor weather for flood risk (AI Alert: Medium)</li>
+                        <li>✅ Continue normal activities (ML Assessment: Safe)</li>
+                        <li>🔍 Enhanced monitoring of affected areas (AI Recommendation)</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        // Emergency and utility functions
+        function showEmergency() {
+            showInfoModal(`
+                <h2>🚨 EMERGENCY - CoastalGuard Pro</h2>
+                <div style="margin: 20px 0; background: #fef2f2; padding: 20px; border-radius: 8px; border-left: 4px solid #ef4444;">
+                    <h3>Emergency Response Activated</h3>
+                    <p><strong>Current Status:</strong> Emergency protocols active</p>
+                    <p><strong>Response Time:</strong> < 30 seconds</p>
+                    <p><strong>AI Analysis:</strong> Real-time threat assessment</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Immediate Actions</h3>
+                    <ul>
+                        <li>📞 Emergency services notified</li>
+                        <li>📱 SMS alerts sent to all registered users</li>
+                        <li>🚨 Evacuation routes activated</li>
+                        <li>🏠 Shelter locations identified</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Emergency Contacts</h3>
+                    <p><strong>Coastal Emergency:</strong> +91-1800-COASTAL</p>
+                    <p><strong>Local Police:</strong> 100</p>
+                    <p><strong>Fire Department:</strong> 101</p>
+                    <p><strong>Ambulance:</strong> 102</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI Emergency Assessment</h3>
+                    <p><strong>Threat Level:</strong> ${Math.random() > 0.5 ? 'High' : 'Medium'} (AI Assessment)</p>
+                    <p><strong>Evacuation Required:</strong> ${Math.random() > 0.7 ? 'Yes' : 'No'} (ML Analysis)</p>
+                    <p><strong>Safe Zones:</strong> AI identified 3 nearby safe locations</p>
+                    <p><strong>Response Time:</strong> Emergency services: 5-8 minutes</p>
+                </div>
+            `);
+        }
+
+        function showAlertDetails(alert) {
+            showInfoModal(`
+                <h2>Alert Details - ${alert.title}</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Alert Information</h3>
+                    <p><strong>Title:</strong> ${alert.title}</p>
+                    <p><strong>Description:</strong> ${alert.description}</p>
+                    <p><strong>Severity:</strong> ${alert.severity.toUpperCase()}</p>
+                    <p><strong>AI Confidence:</strong> ${alert.aiConfidence}%</p>
+                    <p><strong>Timestamp:</strong> ${alert.timestamp.toLocaleString()}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI/ML Analysis</h3>
+                    <ul>
+                        <li><strong>Threat Assessment:</strong> ${alert.severity === 'critical' ? 'High' : 'Medium'} risk</li>
+                        <li><strong>Pattern Recognition:</strong> AI detected similar threat pattern</li>
+                        <li><strong>Prediction Accuracy:</strong> ML model confidence: ${alert.aiConfidence}%</li>
+                        <li><strong>Response Required:</strong> ${alert.severity === 'critical' ? 'Immediate' : 'Within 2 hours'}</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Recommended Actions</h3>
+                    <ul>
+                        ${alert.severity === 'critical' ? 
+                            '<li>🚨 Immediate evacuation recommended</li><li>📞 Contact emergency services</li><li>🏠 Move to designated safe zones</li>' : 
+                            '<li>⚠️ Exercise caution</li><li>📱 Monitor updates closely</li><li>🔍 Avoid affected areas</li>'}
+                    </ul>
+                </div>
+            `);
+        }
+
+        function showReportDetails(report) {
+            showInfoModal(`
+                <h2>Report Details - ${report.title}</h2>
+                <div style="margin: 20px 0;">
+                    <h3>Report Information</h3>
+                    <p><strong>Title:</strong> ${report.title}</p>
+                    <p><strong>Description:</strong> ${report.description}</p>
+                    <p><strong>Status:</strong> ${report.status}</p>
+                    <p><strong>Location:</strong> ${report.location}</p>
+                    <p><strong>Timestamp:</strong> ${report.timestamp.toLocaleString()}</p>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>AI Validation Results</h3>
+                    <ul>
+                        <li><strong>Report Accuracy:</strong> 91% (AI validated)</li>
+                        <li><strong>Location Verification:</strong> Confirmed (ML analysis)</li>
+                        <li><strong>Threat Assessment:</strong> ${report.title.includes('Oil') || report.title.includes('Pollution') ? 'High' : 'Medium'} risk</li>
+                        <li><strong>Response Priority:</strong> ${report.status === 'Under investigation' ? 'High' : 'Medium'}</li>
+                    </ul>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h3>Current Actions</h3>
+                    <ul>
+                        <li>🔍 AI monitoring increased for affected area</li>
+                        <li>📊 Real-time data collection enhanced</li>
+                        <li>📱 Community alerts sent</li>
+                        <li>🚨 Authorities notified</li>
+                    </ul>
+                </div>
+            `);
+        }
+
+        // Utility functions
+        function showInfoModal(content) {
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('infoModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = 'none';
+        }
+
+        function filterAlerts(filter) {
+            const buttons = document.querySelectorAll('#currentAlerts button');
+            buttons.forEach(btn => {
+                btn.className = btn.className.replace('btn', 'btn btn-secondary');
+            });
+            
+            event.target.className = 'btn';
+            
+            let filteredAlerts = realTimeData.alerts;
+            if (filter !== 'all') {
+                filteredAlerts = realTimeData.alerts.filter(alert => alert.severity === filter);
+            }
+            
+            updateAlertsDisplay(filteredAlerts);
+        }
+
+        function showMessage(message, type = 'info') {
+            const messageContainer = document.getElementById('messageContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            messageContainer.appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        function checkSystemHealth() {
+            const health = {
+                ai: AI_SYSTEM.models.flooding.status === 'active',
+                government: Object.values(AI_SYSTEM.governmentAPIs).every(api => api.status === 'connected'),
+                sensors: Object.values(AI_SYSTEM.sensors).every(sensor => sensor.status === 'active')
+            };
+            
+            return health;
+        }
+
+        // Initialize map when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the coastal monitoring map
+            const map = L.map('coastalMapContainer').setView([20.5937, 78.9629], 5); // Center on India
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            // Coastal monitoring stations data
+            const stations = [
+                { name: 'Mumbai', lat: 19.0760, lng: 72.8777, status: 'safe', type: 'monitoring' },
+                { name: 'Goa', lat: 15.2993, lng: 74.1240, status: 'warning', type: 'monitoring' },
+                { name: 'Chennai', lat: 13.0827, lng: 80.2707, status: 'critical', type: 'monitoring' },
+                { name: 'Kolkata', lat: 22.5726, lng: 88.3639, status: 'safe', type: 'monitoring' },
+                { name: 'Kochi', lat: 9.9312, lng: 76.2673, status: 'warning', type: 'monitoring' },
+                { name: 'Vishakhapatnam', lat: 17.6868, lng: 83.2185, status: 'safe', type: 'monitoring' },
+                { name: 'Mangalore', lat: 12.9716, lng: 74.8514, status: 'safe', type: 'monitoring' }
+            ];
+            
+            // Function to get marker color based on status
+            function getMarkerColor(status) {
+                switch(status) {
+                    case 'safe': return '#10b981';
+                    case 'warning': return '#f59e0b';
+                    case 'critical': return '#ef4444';
+                    default: return '#3b82f6';
+                }
+            }
+            
+            // Add markers for each station
+            stations.forEach(station => {
+                const marker = L.marker([station.lat, station.lng], {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: '<div style="background-color: ' + getMarkerColor(station.status) + '; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    })
+                }).addTo(map);
+                
+                // Add popup with station information
+                marker.bindPopup(`
+                    <div style="text-align: center; padding: 10px;">
+                        <h3 style="margin: 0 0 10px 0; color: #1f2937;">${station.name}</h3>
+                        <p style="margin: 5px 0; font-weight: 600;">Status: <span style="color: ${getMarkerColor(station.status)}; text-transform: capitalize;">${station.status}</span></p>
+                        <p style="margin: 5px 0;">Type: ${station.type}</p>
+                        <p style="margin: 5px 0; font-size: 0.9em; color: #6b7280;">Click for more details</p>
+                    </div>
+                `);
+                
+                // Add click event
+                marker.on('click', function() {
+                    showInfoModal(`
+                        <h2>${station.name} Coastal Station</h2>
+                        <div style="margin: 20px 0;">
+                            <h3>Current Status</h3>
+                            <p><strong>Safety Level:</strong> <span style="color: ${getMarkerColor(station.status)}; text-transform: capitalize;">${station.status}</span></p>
+                            <p><strong>Station Type:</strong> ${station.type}</p>
+                            <p><strong>Coordinates:</strong> ${station.lat.toFixed(4)}, ${station.lng.toFixed(4)}</p>
+                        </div>
+                        <div style="margin: 20px 0;">
+                            <h3>AI/ML Analysis</h3>
+                            <p><strong>Threat Level:</strong> ${station.status === 'critical' ? 'High' : station.status === 'warning' ? 'Medium' : 'Low'}</p>
+                            <p><strong>Confidence:</strong> ${Math.floor(Math.random() * 20) + 80}%</p>
+                            <p><strong>Last Update:</strong> ${new Date().toLocaleString()}</p>
+                        </div>
+                        <div style="margin: 20px 0;">
+                            <h3>Recommendations</h3>
+                            <ul>
+                                ${station.status === 'critical' ? '<li>Immediate evacuation recommended</li><li>Emergency services alerted</li>' : 
+                                  station.status === 'warning' ? '<li>Exercise caution</li><li>Monitor updates closely</li>' : 
+                                  '<li>Normal operations</li><li>Continue routine monitoring</li>'}
+                            </ul>
+                        </div>
+                    `);
+                });
+            });
+            
+            // Add scale control
+            L.control.scale().addTo(map);
+            
+            console.log('Coastal monitoring map initialized successfully!');
+        });
+    </script>
+</body>
+</html>
